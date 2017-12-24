@@ -3,11 +3,11 @@
 
 from settings import config
 from bayesian import Bayesian
-# from rnn import Rnn
+from rnn import Rnn
 import pickle
 
 def print_result(evaluate_set,predict,accuracy,f1,precision,recall):
-    print("accuracy: ",accuracy)
+    print("accuracy: ",str(accuracy*100)+"%")
     print("f1:",f1)
     print("precision:",precision)
     print("recall:",recall)
@@ -24,12 +24,27 @@ def write_wrong_predict(data,predict):
         for item in wrong_predict:
             f.write(str(item)+"\n")
 
+def count_function(l):
+    return lambda x: len(list(filter(lambda item: (item == x),l)))
+
+def compare(predict,label):
+    result = [int(predict[i]/2+1.5+label[i]) for i in range(len(label))]
+    count = count_function(result)
+    precision = count(3)/(count(3)+count(1))
+    recall = count(3)/(count(3)+count(2))
+    accuracy = (count(3)+count(0))/len(label)
+    f1 = 2*precision*recall/(precision+recall)
+    return accuracy, f1 , precision, recall
+
 if __name__ == "__main__":
     print("============================ Loading data ============================")
     if config["language"] == 'cn':
         data_path = config["data-path-cn"]
     else:
         data_path = config["data-path-en"]
+        config["rnn-head-word"] = 20000
+    config["rnn-model-name"] = "model-" + config["language"] + ".h5"
+
     train_set = pickle.load(open(data_path+"train.pkl","rb"))
     test_set = pickle.load(open(data_path+"test.pkl","rb"))
     evaluate_set = pickle.load(open(data_path+"evaluate.pkl","rb"))
@@ -41,13 +56,12 @@ if __name__ == "__main__":
     elif algorithm == 'rnn':
         model = Rnn(config)
 
-    if algorithm == 'bayesian' or config.get("train") == True:
-        print("============================ Training...  ============================")
-        model.train(train_set,test_set)
+    print("============================ Training...  ============================")
+    model.train(train_set,test_set)
 
-
-    if algorithm == 'bayesian' or config.get("train") == False:
-        print("============================ Predicting...  ============================")
-        predict, accuracy, f1, precision ,recall = model.predict(evaluate_set)
-        print_result(evaluate_set,predict,accuracy,f1,precision,recall)
-        write_wrong_predict(evaluate_set,predict)
+    print("============================ Predicting...  ============================")
+    predict = model.predict(evaluate_set)
+    accuracy, f1, precision ,recall = compare(predict,list(map(lambda x:x[2],evaluate_set)))
+    print_result(evaluate_set,predict,accuracy,f1,precision,recall)
+    write_wrong_predict(evaluate_set,predict)
+    print("========================================================")

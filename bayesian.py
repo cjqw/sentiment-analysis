@@ -8,7 +8,7 @@ class Bayesian():
     def __init__(self,config):
         self.gram_number = config.get("bayesian-gram-number",3)
         self.smooth_weight = config.get("bayesian-smooth-weight",1)
-        self.adaboost_number = config.get("bayesian-adaboost-layers",0)
+        self.adaboost_number = config.get("bayesian-adaboost-number",0)
         self.language = config.get("language","en")
         self.pos = {}
         self.neg = {}
@@ -51,7 +51,7 @@ class Bayesian():
             txt = "".join(comment[i:i+self.gram_number])
             p_pos = math.log(self.pos.get(txt,self.smooth_weight)/self.pos_count)
             p_neg = math.log(self.neg.get(txt,self.smooth_weight)/self.neg_count)
-            b = b + p_pos - p_neg
+            b = b + (p_pos - p_neg)
         if b > 0:
             return 1
         else:
@@ -60,11 +60,4 @@ class Bayesian():
 
     def predict(self,data):
         predict = [self.predict_label(comment) for _,comment,_ in data]
-        result = [(predict[i]/2 + 1.5  + data[i][2]) for i in range(len(data))]
-        count = count_function(result)
-        precision = count(3)/(count(3)+count(1))
-        recall = count(3)/(count(3)+count(2))
-        accuracy = (count(3)+count(0))/len(data)
-        f1 = 2*precision*recall/(precision+recall)
-
-        return predict, accuracy, f1 , precision, recall
+        return predict

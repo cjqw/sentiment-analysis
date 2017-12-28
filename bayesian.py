@@ -59,5 +59,5 @@ class Bayesian():
 
 
     def predict(self,data):
-        predict = [self.predict_label(comment) for _,comment,_ in data]
+        predict = [self.predict_label(item[1]) for item in data]
         return predict

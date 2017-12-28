@@ -1,7 +1,7 @@
 from keras.preprocessing import sequence
 from keras.models import Sequential
 from keras.layers import Dense, Embedding
-from keras.layers import LSTM
+from keras.layers import LSTM,Bidirectional,Dropout
 from operator import itemgetter
 
 class Rnn():
@@ -58,7 +58,9 @@ class Rnn():
 
         model = Sequential()
         model.add(Embedding(self.max_feature,128))
-        model.add(LSTM(128, dropout=0.2, recurrent_dropout=0.2))
+        # model.add(LSTM(128, dropout=0.2, recurrent_dropout=0.2))
+        model.add(Bidirectional(LSTM(64)))
+        model.add(Dropout(0.5))
         model.add(Dense(1, activation='sigmoid'))
 
         model.compile(loss='binary_crossentropy',

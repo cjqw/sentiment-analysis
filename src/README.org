@@ -1,0 +1,9 @@
+* Usage
+** Set config
+To change config,modify file:settings.py.
+** To train
+Use makefile directly:
+> make
+** To predict
+Make sure you've set the right language in config, and run this command:
+> ./test.py

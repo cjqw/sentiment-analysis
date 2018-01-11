@@ -1,5 +1,5 @@
 \#*
-report/
-__pycache__/
-data/
-model/
+src/__pycache__/
+src/data/
+src/model/
+src/output/

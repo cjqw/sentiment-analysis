@@ -36,10 +36,6 @@ def compare(predict,label):
     f1 = 2*precision*recall/(precision+recall)
     return accuracy, f1 , precision, recall
 
-def write_predict_result(data,predict):
-    s = [[data[i][0],data[i][1],predict[i]] for i in range(len(data))]
-    print(s[:3])
-
 if __name__ == "__main__":
     print("============================ Loading data ============================")
     if config["language"] == 'cn':
@@ -68,5 +64,5 @@ if __name__ == "__main__":
     accuracy, f1, precision ,recall = compare(predict,list(map(lambda x:x[2],evaluate_set)))
     print_result(evaluate_set,predict,accuracy,f1,precision,recall)
     write_wrong_predict(evaluate_set,predict)
-    write_predict_result(evaluate_set,predict)
     print("========================================================")
+    model.save()

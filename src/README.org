@@ -1,9 +1,27 @@
+* Models
+I've tried Bayesian algorithm and classic LSTM on both English and Chinese dataset.
+** Input
+The dataset is divided into training set, test set and evaluate set to 8:1:1 ratio.
+The text of input is split into words using jieba(Chinese) and regex(English) and
+each word is encoded using one-hot encoding.
+** Bayesian algorithm
+The bayesian model stores the frequency of all 3-grams in the training set. To
+smooth the possibility of the grams,the frequency of all the 3-grams is increased by
+a small constant (bayesian-smooth-weight in the config).
+** Classic LSTM
+I used the highlevel api of keras to construct the whole network.The word is
+embedded into dense vectors using keras.layers.Embedding.
 * Usage
 ** Set config
-To change config,modify file:settings.py.
+To change the config,modify file:settings.py.
 ** To train
 Use makefile directly:
+
 > make
+
+Or run main.py to train from the parsed dataset directly.
+To randomly split the dataset into 3 parts, you can use file:data/gendata.py.
 ** To predict
 Make sure you've set the right language in config, and run this command:
+
 > ./test.py
